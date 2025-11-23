@@ -1,4 +1,7 @@
 from PIL import Image as PilImage
+from math import floor
+
+from palette import Palette
 
 
 class Image:
@@ -18,6 +21,26 @@ class Image:
         """Create new image with params of image"""
         new_img = PilImage.new(image.mode, image.size, image.getpixel((0, 0)))
         return cls(new_img)
+
+    @classmethod
+    def render_palette(cls, palette, width = 1024, height = 1024, size = None):
+
+        assert (palette.max() == 255)
+        w_block = width / 16
+        h_block = height / 16
+
+        if not size:
+            size = (width, height)
+
+        img = PilImage.new("RGB", size, (0,0,0))
+        for x in range(size[0]):
+            for y in range(size[1]):
+                new_pixel = palette[floor(x/w_block) + (16 * floor(y/h_block))]
+                img.putpixel((x, y), new_pixel)
+
+        return cls(img)
+
+
 
     @property
     def size(self):
