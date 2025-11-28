@@ -19,20 +19,21 @@ class Image:
     @classmethod
     def new_with_img_params(cls, image):
         """Create new image with params of image"""
-        new_img = PilImage.new(image.mode, image.size, image.getpixel((0, 0)))
+
+        new_img = PilImage.new(image.mode, image.size, "white")
         return cls(new_img)
 
     @classmethod
-    def render_palette(cls, palette, width = 1024, height = 1024, size = None):
+    def render_palette(cls, palette, width=1024, height=1024, size=None):
 
-        assert (palette.max() == 255)
+        assert (palette.max == 255)
         w_block = width / 16
         h_block = height / 16
 
         if not size:
             size = (width, height)
 
-        img = PilImage.new("RGB", size, (0,0,0))
+        img = PilImage.new("RGB", size, (0, 0, 0))
         for x in range(size[0]):
             for y in range(size[1]):
                 new_pixel = palette[floor(x/w_block) + (16 * floor(y/h_block))]
@@ -40,7 +41,12 @@ class Image:
 
         return cls(img)
 
+    @classmethod
+    def custom_new(cls, width=1024, height=1024, size=None, mode="RGB"):
+        if size is None:
+            size = (width, height)
 
+        return cls(PilImage.new(mode, (width, height), "white"))
 
     @property
     def size(self):
@@ -55,8 +61,10 @@ class Image:
         return self.size[1]
 
     @staticmethod
-    def image_map(fun, first, *args):
+    def image_map(fun, first, *args, mode=None):
 
+        if mode is None:
+            mode = first.image.mode
         if args:
             images = [first] + list(args)
         else:
@@ -66,7 +74,7 @@ class Image:
         smallest_height = min([i.height for i in images])
         size = (smallest_width, smallest_height)
 
-        new = Image(PilImage.new(first.image.mode, size, first.image.getpixel((0, 0))))
+        new = Image(PilImage.new(mode, size, "white"))
 
         for x in range(smallest_width):
             for y in range(smallest_height):
@@ -75,6 +83,32 @@ class Image:
                 new.image.putpixel((x, y), new_pixel)
 
         return new
+
+    def get_pixel(self, x=0, y=0, cords=None):
+        if cords is None:
+            cords = (x, y)
+        return self.image.getpixel(cords)
+
+    def paste(self, img, x=0, y=0, cords=None):
+        if cords is None:
+            cords = (x, y)
+
+        self.image.paste(img, cords)
+        return self
+
+    def paste_list(self, list, x=0, y=0, cords=None):
+        if cords is None:
+            cords = (x, y)
+
+        height = len(list)
+        width = len(list[0])
+
+        flat = [i for s in list for i in s]
+        with PilImage.new(self.image.mode, (width, height)) as section:
+            section.putdata(flat)
+            self.paste(section, x, y, cords)
+
+        return self
 
     def save(self, link):
         """saves the image and returns it"""
