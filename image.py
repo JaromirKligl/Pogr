@@ -61,7 +61,7 @@ class Image:
         return self.size[1]
 
     @staticmethod
-    def image_map(fun, first, *args, mode=None):
+    def image_map(fun, first, *args, mode=None, index=False):
 
         if mode is None:
             mode = first.image.mode
@@ -79,7 +79,10 @@ class Image:
         for x in range(smallest_width):
             for y in range(smallest_height):
                 pixels = [img.image.getpixel((x, y)) for img in images]
-                new_pixel = fun(*pixels)
+                if index:
+                    new_pixel = fun(*pixels, x ,y)
+                else:
+                    new_pixel = fun(*pixels)
                 new.image.putpixel((x, y), new_pixel)
 
         return new
@@ -88,6 +91,51 @@ class Image:
         if cords is None:
             cords = (x, y)
         return self.image.getpixel(cords)
+
+    def get_subpixel(self, x=0, y=0, cords=None):
+        if cords:
+            x = cords[0]
+            y = cords[1]
+        """
+        works only in rgb mode
+        returns subpixel using bilinear interpolation
+        """
+        assert(self.image.mode == "RGB")
+
+        x0 = int(x)
+        y0 = int(y)
+        x1 = x0 + 1
+        y1 = y0 + 1
+
+        #figujeme pokud pretece
+        if x0 < 0:
+            x0 = 0
+        if y0 < 0:
+            y0 = 0
+
+        if x1 > self.width - 1:
+            x1 = self.width - 1
+        if y1 > self.height -1:
+            y1 = self.height - 1
+
+
+        c_tl = self.get_pixel(x=x0, y=y0)
+        c_tr = self.get_pixel(x=x1, y=y0)
+        c_bl = self.get_pixel(x=x0, y=y1)
+        c_br = self.get_pixel(x=x1, y=y1)
+
+        dx = x - x0
+        dy = y - y0
+
+        def interpol_fun(tl, tr, bl, br):
+            xtop = tl * dx + tr * (1-dx)
+            xbot = bl * dx + br * (1-dx)
+            return xtop * dy + xbot * (1-dy)
+
+        return tuple(map(interpol_fun, c_tl, c_tr, c_bl, c_br))
+
+    def is_edge_pixel(self, x, y):
+        return x == 0 or y==0 or x == (self.width - 1) or y== (self.height - 1)
 
     def paste(self, img, x=0, y=0, cords=None):
         if cords is None:
