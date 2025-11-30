@@ -33,14 +33,6 @@ def diffusion_matrix(n):
                         matrix_add(scalar_mult(diffusion_matrix(n // 2), 4),
                                    unit_matrix(n // 2)))
 
-
-M1 = ((2, 5),
-      (7, 4))
-
-M2 = ((1, 3),
-      (3, 2))
-
-
 def gray_scale_to_bw(origin, size=16):
 
     def_matrix = diffusion_matrix(size)
