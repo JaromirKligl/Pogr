@@ -16,12 +16,6 @@ if __name__ == '__main__':
     pale = Palette(6, 0, 2)
 
     with Image.render_palette(pale) as pal:
-        pal.save('image/palette.jpg')
+        pal.show('image/palette.jpg')
 
-    with Image.open('image/wolf.jpg') as jirka:
-        start = time.perf_counter()
-        new = convert_to_palette(jirka, pale)
-        end = time.perf_counter()
-        new.save('image/wolf_new.jpg')
-
-    print(end - start)
+    pass

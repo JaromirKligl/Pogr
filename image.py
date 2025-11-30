@@ -180,11 +180,20 @@ class Image:
     def is_edge_pixel(self, x, y):
         return x == 0 or y==0 or x == (self.width - 1) or y== (self.height - 1)
 
+    def is_out_of_bounds(self, x, y):
+        return x < 0 or y < 0 or x >= self.width or y >= self.height
+
+    def color_to_pixel(self,color):
+
+        if isinstance(color, str):
+            return PilImageColor.getcolor(color, self.mode)
+        else:
+            return color
+
     def put_pixel(self, x=0, y=0, cords=None, color="black"):
         if cords is None:
             cords = (x, y)
-        pixel = PilImageColor.getcolor(color, self.mode)
-        self.image.putpixel(cords, pixel)
+        self.image.putpixel(cords, self.color_to_pixel(color))
 
     def paste(self, img, x=0, y=0, cords=None):
         if cords is None:
@@ -217,7 +226,7 @@ class Image:
     def show(self):
         dpi = 50
         fig = plt.figure(figsize=(self.height/dpi,self.width/dpi), dpi=dpi)
-        ax = fig.add_axes([0,0,1,1])
+        ax = fig.add_axes((0,0,1,1))
         ax.imshow(self.image)
         ax.axis('off')
         plt.show()

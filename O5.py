@@ -127,15 +127,7 @@ def linear_image_combination(base, *images):
 
 
 if __name__ == '__main__':
-
-
-    with Image.open("image/wulf.jpg") as wolf:
-        with Image.open("image/lambda.png") as lamb:
-            with Image.open("image/67.png") as sixseven:
-                with linear_image_combination(wolf,
-                                              (lamb, 30, 30),
-                                              (sixseven, 100, 100)) as comb:
-                    comb.save("image/simga_wulf.jpg")
+    pass
 
 
 

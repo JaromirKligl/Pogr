@@ -71,11 +71,4 @@ def random_grid_antialiasing(image, seed=None, n=2):
 
 
 if __name__ == "__main__":
-    start = time.perf_counter()
-
-    with Image.open("image/moire.png") as image:
-        with random_grid_antialiasing(image, n=16) as fixed:
-            fixed.save("image/moire_random_16.png")
-
-    end = time.perf_counter()
-    print(end-start)
+    pass

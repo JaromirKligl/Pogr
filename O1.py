@@ -1,4 +1,5 @@
-from math import floor
+from math import floor,sqrt
+
 from image import Image
 
 
@@ -27,11 +28,26 @@ def desaturate(img, s=0.5, r=0.299, g=0.587, b=0.114):
 
     return new
 
+def desaturate_equalization(img, c = 25):
+    """
+    equalize saturation of all pixels by length c
+    """
+    def eql_fun(gs, origin):
+        r,g,b = origin
+        length = sqrt((r-gs)*(r-gs) + (g-gs)*(g-gs) + (b-gs)*(b-gs))
+        if length == 0:
+            return origin
+        norm =  tuple([round((pix - gs)/length) for pix in origin])
+        return tuple([gs + nr * c for nr in norm] )
+
+    with grayscale(img) as gs:
+        new = Image.image_map(eql_fun, gs, img, mode="RGB")
+
+    return new
+
 
 if __name__ == "__main__":
-    with Image.open('image/jirka.jpg') as img:
-        with grayscale(img) as gr:
-            gr.save('image/grayjirka.jpg')
+    pass
 
-        with desaturate(img, s=0.7, r=0, b=0.7, g=0.3) as ds:
-            ds.save('image/desatjirka.jpg')
+
+

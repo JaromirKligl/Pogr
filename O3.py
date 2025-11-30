@@ -52,9 +52,5 @@ def gray_scale_to_bw(origin, size=16):
 
 
 if __name__ == "__main__":
-    with Image.open("image/jirka.jpg") as wolf:
-        with grayscale(wolf) as gray:
-            img = gray_scale_to_bw(gray)
-            img.save("image/jirka_bw.png")
-
+    pass
 
